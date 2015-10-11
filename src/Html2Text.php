@@ -307,6 +307,9 @@ class Html2Text {
 	 * @return integer      The index number that will refer to the URL passed.
 	 */
 	protected static function indexUrl($url, $text = null) {
+		$url = trim($url);
+		$text = trim($text);
+
 		if (!isset(static::$indexedUrls[$url])) {
 			static::$indexedUrls[$url] = array(
 				'index' => count(static::$indexedUrls) + 1,
