@@ -46,8 +46,8 @@ class Html2Text {
 	 *   <li>Information in the &lt;head&gt; is lost
 	 * </ul>
 	 *
-	 * @param string html the input HTML
-	 * @param array An array of options of the Html2Text::OPT_* variety
+	 * @param string $html the input HTML
+	 * @param array $options An array of options of the Html2Text::OPT_* variety
 	 * @return string the HTML converted, as best as possible, to text
 	 * @throws Html2TextException if the HTML could not be loaded as a {@link DOMDocument}
 	 */
@@ -102,7 +102,7 @@ class Html2Text {
 	 * then \r becomes \n. This means that all newlines (Unix, Windows, Mac)
 	 * all become \ns.
 	 *
-	 * @param string text text with any number of \r, \r\n and \n combinations
+	 * @param string $text text with any number of \r, \r\n and \n combinations
 	 * @return string the fixed text
 	 */
 	static function fixNewlines($text) {
