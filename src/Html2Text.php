@@ -89,7 +89,7 @@ class Html2Text {
 
 		// if they want URLs at the end of the document instead of inline, append them here
 		if (in_array(static::OPT_FOOTER_URLS, $options) && Html2Text::$indexedUrls) {
-			$output .= "\n\n------\n\n";
+			$output .= "\n\n";
 			foreach (Html2Text::$indexedUrls as $url => $info) {
 				$output .= "[".$info['index']."] ".($info['text']?$info['text']." ":"").$url."\n";
 			}
