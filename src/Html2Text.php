@@ -71,7 +71,7 @@ class Html2Text {
 		$doc->recover = TRUE;
 		$doc->xmlStandalone = true;
 
-		$prevValue = libxml_use_internal_errors(true); //prevent $doc to trhow any warnings
+		$prevValue = libxml_use_internal_errors(true); //prevent $doc to throw any warnings
 		$loaded = $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NONET);
 		libxml_use_internal_errors($prevValue); //restore original setting
 
