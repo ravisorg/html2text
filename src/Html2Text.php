@@ -52,7 +52,6 @@ class Html2Text {
 	 * @throws Html2TextException if the HTML could not be loaded as a {@link DOMDocument}
 	 */
 	static function convert($html, $options = array()) {
-
 		// reset
 		Html2Text::$indexedUrls = array();
 
@@ -67,9 +66,11 @@ class Html2Text {
 		$html = static::fixNewlines($html);
 
 		$doc = new \DOMDocument();
+
 		$doc->strictErrorChecking = FALSE;
 		$doc->recover = TRUE;
 		$doc->xmlStandalone = true;
+
 		$prevValue = libxml_use_internal_errors(true); //prevent $doc to trhow any warnings
 		$loaded = $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NONET);
 		libxml_use_internal_errors($prevValue); //restore original setting
