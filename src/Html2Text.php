@@ -148,7 +148,7 @@ class Html2Text {
 		return $nextName;
 	}
 
-	static function iterateOverNode($node, &$options) {
+	static function iterateOverNode($node, $options) {
 		if ($node instanceof \DOMText) {
 		  // Replace whitespace characters with a space (equivilant to \s)
 			return preg_replace("/[\\t\\n\\f\\r ]+/im", " ", $node->wholeText);
