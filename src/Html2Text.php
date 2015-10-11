@@ -34,7 +34,7 @@ class Html2Text {
 	 * @var array Associative array, where the key is a URL, and the value is an associative array
 	 *     of properties (currently "index" and "text").
 	 */
-	static $_indexedUrls = array();
+	protected static $indexedUrls = array();
 
 	/**
 	 * Tries to convert the given HTML into a plain text format - best suited for
@@ -46,15 +46,14 @@ class Html2Text {
 	 *   <li>Information in the &lt;head&gt; is lost
 	 * </ul>
 	 *
-	 * @param string html the input HTML
-	 * @param array An array of options of the Html2Text::OPT_* variety
+	 * @param string $html the input HTML
+	 * @param array $options An array of options of the Html2Text::OPT_* variety
 	 * @return string the HTML converted, as best as possible, to text
 	 * @throws Html2TextException if the HTML could not be loaded as a {@link DOMDocument}
 	 */
-	static function convert($html,$options=array()) {
-
+	static function convert($html, $options = array()) {
 		// reset
-		Html2Text::$_indexedUrls = array();
+		Html2Text::$indexedUrls = array();
 
 		// DOMDocument doesn't support empty value and throws an error
 		if (!$html) {
@@ -67,18 +66,20 @@ class Html2Text {
 		$html = static::fixNewlines($html);
 
 		$doc = new \DOMDocument();
+
 		$doc->strictErrorChecking = FALSE;
 		$doc->recover = TRUE;
 		$doc->xmlStandalone = true;
-		$prevValue = libxml_use_internal_errors(true); //prevent $doc to trhow any warnings
-		$loaded = $doc->loadHTML($html,LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NONET);
+
+		$prevValue = libxml_use_internal_errors(true); //prevent $doc to throw any warnings
+		$loaded = $doc->loadHTML($html, LIBXML_NOWARNING | LIBXML_NOERROR | LIBXML_NONET);
 		libxml_use_internal_errors($prevValue); //restore original setting
 
 		if (!$loaded) {
 			throw new Html2TextException("Could not load HTML - badly formed?", $html);
 		}
 
-		$output = static::iterateOverNode($doc,$options);
+		$output = static::iterateOverNode($doc, $options);
 
 		// remove leading and trailing spaces on each line
 		$output = preg_replace("/[ \t]*\n[ \t]*/im", "\n", $output);
@@ -87,9 +88,9 @@ class Html2Text {
 		$output = trim($output);
 
 		// if they want URLs at the end of the document instead of inline, append them here
-		if (in_array(static::OPT_FOOTER_URLS,$options) && Html2Text::$_indexedUrls) {
-			$output .= "\n\n------\n\n";
-			foreach (Html2Text::$_indexedUrls as $url=>$info) {
+		if (in_array(static::OPT_FOOTER_URLS, $options) && Html2Text::$indexedUrls) {
+			$output .= "\n\n";
+			foreach (Html2Text::$indexedUrls as $url => $info) {
 				$output .= "[".$info['index']."] ".($info['text']?$info['text']." ":"").$url."\n";
 			}
 		}
@@ -102,7 +103,7 @@ class Html2Text {
 	 * then \r becomes \n. This means that all newlines (Unix, Windows, Mac)
 	 * all become \ns.
 	 *
-	 * @param string text text with any number of \r, \r\n and \n combinations
+	 * @param string $text text with any number of \r, \r\n and \n combinations
 	 * @return string the fixed text
 	 */
 	static function fixNewlines($text) {
@@ -148,7 +149,7 @@ class Html2Text {
 		return $nextName;
 	}
 
-	static function iterateOverNode($node,&$options) {
+	static function iterateOverNode($node, $options) {
 		if ($node instanceof \DOMText) {
 		  // Replace whitespace characters with a space (equivilant to \s)
 			return preg_replace("/[\\t\\n\\f\\r ]+/im", " ", $node->wholeText);
@@ -222,7 +223,7 @@ class Html2Text {
 			for ($i = 0; $i < $node->childNodes->length; $i++) {
 				$n = $node->childNodes->item($i);
 
-				$text = static::iterateOverNode($n,$options);
+				$text = static::iterateOverNode($n, $options);
 
 				$output .= $text;
 			}
@@ -272,8 +273,8 @@ class Html2Text {
 					if ($href == $output || $href == "mailto:$output" || $href == "http://$output" || $href == "https://$output") {
 						// link to the same address: just use link
 						$output;
-					} elseif (in_array(static::OPT_FOOTER_URLS,$options)) {
-						$output = $output."[".static::_indexUrl($href,$output)."]";
+					} elseif (in_array(static::OPT_FOOTER_URLS, $options)) {
+						$output = $output."[".static::indexUrl($href, $output)."]";
 					} else {
 						// replace it
 						$output = "[$output]($href)";
@@ -305,14 +306,17 @@ class Html2Text {
 	 * @param  string $text The text of the link (associated with the above URL).
 	 * @return integer      The index number that will refer to the URL passed.
 	 */
-	static function _indexUrl($url,$text=null) {
-		if (!isset(static::$_indexedUrls[$url])) {
-			static::$_indexedUrls[$url] = array(
-				'index'=>count(static::$_indexedUrls),
-				'text'=>$text,
+	protected static function indexUrl($url, $text = null) {
+		$url = trim($url);
+		$text = trim($text);
+
+		if (!isset(static::$indexedUrls[$url])) {
+			static::$indexedUrls[$url] = array(
+				'index' => count(static::$indexedUrls) + 1,
+				'text' => $text,
 			);
 		}
-		return static::$_indexedUrls[$url]['index'];
+		return static::$indexedUrls[$url]['index'];
 	}
 
 }
