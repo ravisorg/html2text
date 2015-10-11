@@ -308,7 +308,7 @@ class Html2Text {
 	static function _indexUrl($url,$text=null) {
 		if (!isset(static::$_indexedUrls[$url])) {
 			static::$_indexedUrls[$url] = array(
-				'index'=>count(static::$_indexedUrls),
+				'index'=>count(static::$_indexedUrls) + 1,
 				'text'=>$text,
 			);
 		}
