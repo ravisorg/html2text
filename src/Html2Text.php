@@ -34,7 +34,7 @@ class Html2Text {
 	 * @var array Associative array, where the key is a URL, and the value is an associative array
 	 *     of properties (currently "index" and "text").
 	 */
-	static $_indexedUrls = array();
+	protected static $indexedUrls = array();
 
 	/**
 	 * Tries to convert the given HTML into a plain text format - best suited for
@@ -54,7 +54,7 @@ class Html2Text {
 	static function convert($html, $options = array()) {
 
 		// reset
-		Html2Text::$_indexedUrls = array();
+		Html2Text::$indexedUrls = array();
 
 		// DOMDocument doesn't support empty value and throws an error
 		if (!$html) {
@@ -87,9 +87,9 @@ class Html2Text {
 		$output = trim($output);
 
 		// if they want URLs at the end of the document instead of inline, append them here
-		if (in_array(static::OPT_FOOTER_URLS, $options) && Html2Text::$_indexedUrls) {
+		if (in_array(static::OPT_FOOTER_URLS, $options) && Html2Text::$indexedUrls) {
 			$output .= "\n\n------\n\n";
-			foreach (Html2Text::$_indexedUrls as $url => $info) {
+			foreach (Html2Text::$indexedUrls as $url => $info) {
 				$output .= "[".$info['index']."] ".($info['text']?$info['text']." ":"").$url."\n";
 			}
 		}
@@ -273,7 +273,7 @@ class Html2Text {
 						// link to the same address: just use link
 						$output;
 					} elseif (in_array(static::OPT_FOOTER_URLS, $options)) {
-						$output = $output."[".static::_indexUrl($href, $output)."]";
+						$output = $output."[".static::indexUrl($href, $output)."]";
 					} else {
 						// replace it
 						$output = "[$output]($href)";
@@ -305,14 +305,14 @@ class Html2Text {
 	 * @param  string $text The text of the link (associated with the above URL).
 	 * @return integer      The index number that will refer to the URL passed.
 	 */
-	static function _indexUrl($url, $text = null) {
-		if (!isset(static::$_indexedUrls[$url])) {
-			static::$_indexedUrls[$url] = array(
-				'index' => count(static::$_indexedUrls) + 1,
+	protected static function indexUrl($url, $text = null) {
+		if (!isset(static::$indexedUrls[$url])) {
+			static::$indexedUrls[$url] = array(
+				'index' => count(static::$indexedUrls) + 1,
 				'text' => $text,
 			);
 		}
-		return static::$_indexedUrls[$url]['index'];
+		return static::$indexedUrls[$url]['index'];
 	}
 
 }
